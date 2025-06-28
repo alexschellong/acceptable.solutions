@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+acceptablesolutions/
+*.db
+.idea/
+.vscode/
+.DS_Store
+create_customer_requests_db.py
