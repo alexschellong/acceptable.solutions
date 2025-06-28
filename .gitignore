@@ -11,3 +11,4 @@ acceptablesolutions/
 .vscode/
 .DS_Store
 create_customer_requests_db.py
+.gitignore
