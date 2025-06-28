@@ -1,6 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from new_request_schema import CustomerRequest
 from new_request_functions import *
+from new_request_verify_functions import *
+import jwt
+from jwt.exceptions import ExpiredSignatureError
+import config
+
+
+SECRET_KEY = config.SECRET_KEY
+ALGORITHM = "HS256"
 
 router = APIRouter()
 
@@ -56,7 +64,7 @@ async def verify_request(token: str, db=Depends(get_db)):
         if not look_up_request:
             raise HTTPException(status_code=404, detail="Request not found")
         
-        move_request_to_customer_requests_table(customer_email, id, db)
+        move_verified_request_to_customer_requests_table(customer_email, id, db)
 
         return {"Request verified": True}
 
