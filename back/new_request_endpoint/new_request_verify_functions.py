@@ -1,20 +1,5 @@
-import jwt
-import sqlite3
-from datetime import timedelta, timezone, datetime
 from fastapi import HTTPException
-import config
-
-SECRET_KEY = config.SECRET_KEY
-ALGORITHM = "HS256"
-
-def generate_jwt_token(data: dict, expires_in: int) -> str:
-    
-    to_encode = data.copy()
-    expire = datetime(timezone.utc) + timedelta(minutes=expires_in)
-    
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+from sqlite3 import Error as sqlite3_Error
 
 
 def look_up_request(customer_email: str, id: int, db):
@@ -57,16 +42,12 @@ def move_verified_request_to_customer_requests_table(customer_email: str, id: in
         cursor.execute(insert_into_customer_requests_and_delete_from_auth_table
                     , (customer_email, id))
 
-        result = cursor.fetchone()
         cursor.close()
         db.commit()
     
-    except sqlite3.Error as e:
+    except sqlite3_Error:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"Database error: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {sqlite3_Error}")
         
 
-    if result == 1:
-        return True
-    else:
-        return False
+    return True
